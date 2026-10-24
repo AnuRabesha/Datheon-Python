@@ -1,0 +1,136 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "howdy", "what's up", "greetings", "sup"],
+      "responses": [
+        "Hello! Welcome to TechShop Support. How can I help you today?",
+        "Hi there! I'm your TechShop assistant. What can I do for you?",
+        "Hey! Great to hear from you. What do you need help with?"
+      ]
+    },
+    {
+      "tag": "farewell",
+      "patterns": ["bye", "goodbye", "see you", "take care", "later", "exit", "quit", "farewell", "thanks bye", "thank you bye"],
+      "responses": [
+        "Goodbye! Have a wonderful day!",
+        "Thanks for reaching out. Take care!",
+        "See you next time! Don't hesitate to come back if you need help."
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": ["thanks", "thank you", "thx", "ty", "appreciate it", "cheers", "that helped", "perfect thanks"],
+      "responses": [
+        "You're welcome! Is there anything else I can help you with?",
+        "Happy to help! Anything else on your mind?",
+        "Glad I could assist! Let me know if you need anything else."
+      ]
+    },
+    {
+      "tag": "hours",
+      "patterns": ["business hours", "opening hours", "when are you open", "what time do you open", "what time do you close", "are you open", "store hours", "working hours", "open today", "open on weekend", "open on saturday", "open on sunday"],
+      "responses": [
+        "Our business hours are:\n  Mon-Fri : 9:00 AM - 6:00 PM\n  Saturday: 10:00 AM - 4:00 PM\n  Sunday  : Closed\nAll times are in Eastern Time (ET)."
+      ]
+    },
+    {
+      "tag": "location",
+      "patterns": ["where are you", "location", "address", "where is the store", "find you", "directions", "nearest store", "physical store"],
+      "responses": [
+        "Our main store is located at:\n  123 Tech Avenue, Suite 400\n  New York, NY 10001\n\nYou can also shop online at www.techshop.com anytime!"
+      ]
+    },
+    {
+      "tag": "contact",
+      "patterns": ["contact", "phone number", "email", "reach you", "call you", "support email", "customer service number", "how to contact", "get in touch"],
+      "responses": [
+        "You can reach us through:\n  Phone : 1-800-TECH-SHOP (Mon-Fri, 9 AM-6 PM ET)\n  Email : support@techshop.com\n  Chat  : Available on our website 24/7"
+      ]
+    },
+    {
+      "tag": "return_policy",
+      "patterns": ["return", "refund", "exchange", "return policy", "money back", "send back", "return item", "how to return", "return window", "can i return"],
+      "responses": [
+        "Our return policy:\n  - 30-day hassle-free returns on all items\n  - Items must be in original condition and packaging\n  - Refunds are processed within 5-7 business days\n  - Start a return at: www.techshop.com/returns\n\nNeed help with a specific return? Share your order number!"
+      ]
+    },
+    {
+      "tag": "shipping",
+      "patterns": ["shipping", "delivery", "how long to deliver", "shipping time", "when will it arrive", "track order", "tracking", "free shipping", "shipping cost", "express delivery", "overnight"],
+      "responses": [
+        "Shipping options:\n  Standard (5-7 days) : FREE on orders over $50\n  Express  (2-3 days) : $9.99\n  Overnight (1 day)   : $19.99\n\nTrack your order at: www.techshop.com/track\nYou'll also receive a tracking email once your order ships."
+      ]
+    },
+    {
+      "tag": "order_status",
+      "patterns": ["order status", "where is my order", "check order", "my order", "order update", "has my order shipped", "order number", "order confirmation"],
+      "responses": [
+        "To check your order status:\n  1. Visit www.techshop.com/orders\n  2. Log in with your account email\n  3. Enter your order number\n\nOr email us at orders@techshop.com with your order number and we'll update you within 2 hours!"
+      ]
+    },
+    {
+      "tag": "payment",
+      "patterns": ["payment", "pay", "credit card", "debit card", "paypal", "apple pay", "google pay", "payment methods", "accepted cards", "visa", "mastercard", "amex", "installment", "buy now pay later", "financing"],
+      "responses": [
+        "We accept the following payment methods:\n  - Visa, Mastercard, American Express, Discover\n  - PayPal & PayPal Credit\n  - Apple Pay & Google Pay\n  - Shop Pay Installments (0% APR for 4 payments)\n\nAll transactions are secured with 256-bit SSL encryption."
+      ]
+    },
+    {
+      "tag": "warranty",
+      "patterns": ["warranty", "warranties", "guarantee", "broken", "defective", "not working", "damaged", "faulty", "repair", "warranty claim", "product warranty"],
+      "responses": [
+        "Warranty information:\n  - All products include a 1-year manufacturer warranty\n  - Extended 2-year warranty available for $29.99\n  - Covers manufacturing defects and hardware failures\n  - Does NOT cover accidental damage or water damage\n\nTo file a warranty claim: www.techshop.com/warranty\nOr call 1-800-TECH-SHOP"
+      ]
+    },
+    {
+      "tag": "products",
+      "patterns": ["products", "product", "what do you sell", "catalog", "items", "what products", "product list", "categories", "what can i buy", "inventory"],
+      "responses": [
+        "We carry a wide range of tech products:\n  Laptops & Computers  | Smartphones & Tablets\n  Headphones & Audio   | Smart Home Devices\n  Gaming Gear          | Cameras & Photography\n  Accessories & Cables | Wearables & Fitness\n\nBrowse our full catalog at www.techshop.com/products"
+      ]
+    },
+    {
+      "tag": "discount",
+      "patterns": ["discount", "discounts", "coupon", "coupons", "promo code", "sale", "deal", "deals", "offer", "promotion", "voucher", "student discount", "military discount", "black friday", "cyber monday"],
+      "responses": [
+        "Current promotions:\n  - Sign up for our newsletter: 10% off your first order\n  - Student discount: 15% off with valid .edu email\n  - Military discount: 20% off with ID verification\n  - Check www.techshop.com/deals for today's sales!\n\nUse code WELCOME10 for 10% off your first purchase."
+      ]
+    },
+    {
+      "tag": "account",
+      "patterns": ["account", "login", "sign in", "sign up", "register", "forgot password", "reset password", "create account", "my account", "profile"],
+      "responses": [
+        "Account help:\n  - Create account : www.techshop.com/register\n  - Login          : www.techshop.com/login\n  - Reset password : www.techshop.com/forgot-password\n\nHaving trouble logging in? Email accounts@techshop.com or call 1-800-TECH-SHOP."
+      ]
+    },
+    {
+      "tag": "technical_support",
+      "patterns": ["technical support", "tech support", "setup help", "how to setup", "not working", "troubleshoot", "error", "issue", "problem", "help with product", "installation", "configure"],
+      "responses": [
+        "For technical support:\n  - Live Chat  : www.techshop.com/support (24/7)\n  - Phone      : 1-800-TECH-SHOP (Mon-Fri, 9 AM-6 PM ET)\n  - Email      : techsupport@techshop.com\n  - Help Center: www.techshop.com/help\n\nFor faster service, have your order number and product model ready!"
+      ]
+    },
+    {
+      "tag": "price_match",
+      "patterns": ["price match", "cheaper elsewhere", "beat the price", "found it cheaper", "price guarantee", "lower price", "competitor price"],
+      "responses": [
+        "Yes, we offer a Price Match Guarantee!\n  - Found a lower price at an authorized retailer?\n  - We'll match it - just show us the listing\n  - Valid within 14 days of purchase\n  - Submit at: www.techshop.com/price-match\n\nExclusions: marketplace sellers, clearance items, limited-time flash sales."
+      ]
+    },
+    {
+      "tag": "gift_card",
+      "patterns": ["gift card", "gift voucher", "e-gift", "gift certificate", "buy gift card", "redeem gift card"],
+      "responses": [
+        "Gift Cards:\n  - Available in $25, $50, $100, $200 denominations\n  - Physical & digital options available\n  - Never expire, no fees\n  - Purchase: www.techshop.com/gift-cards\n  - Redeem at checkout or in-store"
+      ]
+    },
+    {
+      "tag": "human_agent",
+      "patterns": ["speak to human", "speak to a human", "talk to agent", "real person", "live agent", "human support", "speak to someone", "customer representative", "escalate"],
+      "responses": [
+        "I'll connect you with a live agent right away!\n  - Live Chat : www.techshop.com/live-chat\n  - Phone     : 1-800-TECH-SHOP\n  - Hours     : Mon-Fri, 9 AM-6 PM ET\n\nAverage wait time is currently under 3 minutes."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>S&P 500 Portfolio Tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1f2e, #252d3d);
+      padding: 24px 40px;
+      border-bottom: 1px solid #2d3748;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header h1 { font-size: 1.6rem; font-weight: 700; color: #63b3ed; }
+    header span { font-size: 0.9rem; color: #718096; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+    .card {
+      background: #1a1f2e;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card h2 { font-size: 1.1rem; color: #90cdf4; margin-bottom: 16px; font-weight: 600; }
+
+    .form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
+    label { font-size: 0.8rem; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    select, input[type="text"], input[type="number"] {
+      background: #252d3d;
+      border: 1px solid #3d4a5c;
+      border-radius: 8px;
+      color: #e2e8f0;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    select:focus, input:focus { border-color: #63b3ed; }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: #3182ce; color: #fff; }
+    .btn-success { background: #38a169; color: #fff; }
+    .btn-danger  { background: #e53e3e; color: #fff; font-size: 0.8rem; padding: 6px 12px; }
+    .btn-outline { background: transparent; border: 1px solid #3d4a5c; color: #a0aec0; }
+
+    #ticker-info {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: #252d3d;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #90cdf4;
+      display: none;
+    }
+
+    #holdings-list { margin-top: 16px; }
+    .holding-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: #252d3d;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    .holding-item .ticker-badge {
+      background: #2b4a7a;
+      color: #90cdf4;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-right: 10px;
+    }
+
+    .summary-actions { display: flex; gap: 12px; margin-bottom: 16px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    thead th {
+      background: #252d3d;
+      color: #90cdf4;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid #3d4a5c;
+    }
+    tbody tr { border-bottom: 1px solid #2d3748; transition: background 0.15s; }
+    tbody tr:hover { background: #1e2535; }
+    tbody td { padding: 10px 12px; }
+
+    .gain  { color: #68d391; font-weight: 600; }
+    .loss  { color: #fc8181; font-weight: 600; }
+    .total-row td { background: #1e2535; font-weight: 700; border-top: 2px solid #3d4a5c; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card {
+      background: #252d3d;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-card .label { font-size: 0.75rem; color: #718096; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .stat-card .value { font-size: 1.4rem; font-weight: 700; }
+
+    #summary-section { display: none; }
+    #error-msg { color: #fc8181; font-size: 0.85rem; margin-top: 8px; display: none; }
+
+    .empty-state { text-align: center; color: #4a5568; padding: 32px; font-size: 0.95rem; }
+
+    @media (max-width: 600px) {
+      header { padding: 16px 20px; }
+      .container { padding: 16px; }
+      table { font-size: 0.78rem; }
+      thead th, tbody td { padding: 8px 6px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>📈 S&amp;P 500 Portfolio Tracker</h1>
+    <span>Track your investments against live S&amp;P 500 prices</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Step 1: Add Holdings -->
+  <div class="card">
+    <h2>➕ Add Holdings</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Filter by Sector</label>
+        <select id="sector-select">
+          <option value="">All Sectors</option>
+          {% for s in sectors %}
+          <option value="{{ s }}">{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Ticker Symbol</label>
+        <select id="ticker-select"><option value="">— select ticker —</option></select>
+      </div>
+      <div class="form-group" style="max-width:140px">
+        <label>Buy Price ($)</label>
+        <input type="number" id="buy-price" min="0.01" step="0.01" placeholder="0.00"/>
+      </div>
+      <div class="form-group" style="max-width:140px">
+        <label>Shares</label>
+        <input type="number" id="shares" min="0.01" step="0.01" placeholder="0"/>
+      </div>
+      <button class="btn btn-primary" onclick="addHolding()">Add</button>
+    </div>
+    <div id="ticker-info"></div>
+    <div id="error-msg"></div>
+    <div id="holdings-list">
+      <div class="empty-state">No holdings added yet.</div>
+    </div>
+  </div>
+
+  <!-- Step 2: Summary -->
+  <div style="display:flex; gap:12px; margin-bottom:24px;">
+    <button class="btn btn-success" onclick="computeSummary()">📊 Compute Summary</button>
+    <button class="btn btn-outline" onclick="clearAll()">🗑 Clear All</button>
+  </div>
+
+  <div id="summary-section">
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="card">
+      <h2>📋 Portfolio Summary</h2>
+      <div class="summary-actions">
+        <button class="btn btn-success" onclick="saveCSV()">💾 Save to CSV</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Ticker</th><th>Company</th><th>Sector</th>
+              <th>Shares</th><th>Buy $</th><th>Now $</th>
+              <th>Invested</th><th>Value</th><th>G/L</th><th>G/L %</th>
+            </tr>
+          </thead>
+          <tbody id="summary-body"></tbody>
+          <tfoot id="summary-foot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const holdings = [];
+  let allTickers = [];
+
+  async function loadTickers() {
+    const sector = document.getElementById("sector-select").value;
+    const res = await fetch(`/api/tickers?sector=${encodeURIComponent(sector)}`);
+    allTickers = await res.json();
+    const sel = document.getElementById("ticker-select");
+    sel.innerHTML = '<option value="">— select ticker —</option>';
+    allTickers.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t.symbol;
+      opt.textContent = `${t.symbol} — ${t.name}`;
+      sel.appendChild(opt);
+    });
+    updateTickerInfo();
+  }
+
+  function updateTickerInfo() {
+    const sym = document.getElementById("ticker-select").value;
+    const info = document.getElementById("ticker-info");
+    if (!sym) { info.style.display = "none"; return; }
+    const t = allTickers.find(x => x.symbol === sym);
+    if (!t) { info.style.display = "none"; return; }
+    info.style.display = "block";
+    info.innerHTML = `<strong>${t.name}</strong> &nbsp;|&nbsp; ${t.sector} &nbsp;|&nbsp; ${t.industry} &nbsp;|&nbsp; Current Price: <strong>$${t.price.toLocaleString("en-US", {minimumFractionDigits:2})}</strong>`;
+  }
+
+  function showError(msg) {
+    const el = document.getElementById("error-msg");
+    el.textContent = msg;
+    el.style.display = msg ? "block" : "none";
+  }
+
+  function addHolding() {
+    showError("");
+    const ticker    = document.getElementById("ticker-select").value;
+    const buyPrice  = parseFloat(document.getElementById("buy-price").value);
+    const shares    = parseFloat(document.getElementById("shares").value);
+
+    if (!ticker)          return showError("Please select a ticker.");
+    if (isNaN(buyPrice) || buyPrice <= 0) return showError("Enter a valid buy price.");
+    if (isNaN(shares)   || shares   <= 0) return showError("Enter a valid number of shares.");
+    if (holdings.find(h => h.ticker === ticker)) return showError(`${ticker} is already added.`);
+
+    const t = allTickers.find(x => x.symbol === ticker);
+    holdings.push({ ticker, buy_price: buyPrice, shares, name: t?.name || "", current_price: t?.price || 0 });
+    renderHoldings();
+    document.getElementById("buy-price").value = "";
+    document.getElementById("shares").value = "";
+  }
+
+  function removeHolding(ticker) {
+    const idx = holdings.findIndex(h => h.ticker === ticker);
+    if (idx !== -1) holdings.splice(idx, 1);
+    renderHoldings();
+  }
+
+  function renderHoldings() {
+    const el = document.getElementById("holdings-list");
+    if (!holdings.length) {
+      el.innerHTML = '<div class="empty-state">No holdings added yet.</div>';
+      return;
+    }
+    el.innerHTML = holdings.map(h => `
+      <div class="holding-item">
+        <div>
+          <span class="ticker-badge">${h.ticker}</span>
+          <span>${h.name}</span>
+        </div>
+        <div style="display:flex;gap:24px;align-items:center;font-size:0.85rem;color:#a0aec0">
+          <span>Buy: <strong style="color:#e2e8f0">$${h.buy_price.toFixed(2)}</strong></span>
+          <span>Shares: <strong style="color:#e2e8f0">${h.shares}</strong></span>
+          <span>Now: <strong style="color:#90cdf4">$${h.current_price.toFixed(2)}</strong></span>
+          <button class="btn btn-danger" onclick="removeHolding('${h.ticker}')">✕</button>
+        </div>
+      </div>`).join("");
+  }
+
+  async function computeSummary() {
+    if (!holdings.length) return showError("Add at least one holding first.");
+    showError("");
+    const res  = await fetch("/api/summary", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(holdings),
+    });
+    const rows = await res.json();
+    renderSummary(rows);
+    document.getElementById("summary-section").style.display = "block";
+    document.getElementById("summary-section").scrollIntoView({ behavior: "smooth" });
+  }
+
+  function fmt(n) { return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  function renderSummary(rows) {
+    const totalInvested = rows.reduce((s, r) => s + r.invested, 0);
+    const totalValue    = rows.reduce((s, r) => s + r.market_value, 0);
+    const totalGL       = totalValue - totalInvested;
+    const totalPct      = totalInvested ? (totalGL / totalInvested) * 100 : 0;
+
+    document.getElementById("stats-grid").innerHTML = `
+      <div class="stat-card"><div class="label">Total Invested</div><div class="value">$${fmt(totalInvested)}</div></div>
+      <div class="stat-card"><div class="label">Market Value</div><div class="value">$${fmt(totalValue)}</div></div>
+      <div class="stat-card"><div class="label">Total G/L</div><div class="value ${totalGL >= 0 ? 'gain' : 'loss'}">${totalGL >= 0 ? '+' : ''}$${fmt(totalGL)}</div></div>
+      <div class="stat-card"><div class="label">Return</div><div class="value ${totalPct >= 0 ? 'gain' : 'loss'}">${totalPct >= 0 ? '+' : ''}${totalPct.toFixed(2)}%</div></div>
+      <div class="stat-card"><div class="label">Holdings</div><div class="value">${rows.length}</div></div>
+    `;
+
+    document.getElementById("summary-body").innerHTML = rows.map(r => `
+      <tr>
+        <td><span class="ticker-badge">${r.ticker}</span></td>
+        <td>${r.name}</td>
+        <td style="color:#a0aec0;font-size:0.82rem">${r.sector}</td>
+        <td>${r.shares}</td>
+        <td>$${fmt(r.buy_price)}</td>
+        <td>$${fmt(r.current_price)}</td>
+        <td>$${fmt(r.invested)}</td>
+        <td>$${fmt(r.market_value)}</td>
+        <td class="${r.gain_loss >= 0 ? 'gain' : 'loss'}">${r.gain_loss >= 0 ? '+' : ''}$${fmt(r.gain_loss)}</td>
+        <td class="${r.gain_loss_pct >= 0 ? 'gain' : 'loss'}">${r.gain_loss_pct >= 0 ? '+' : ''}${r.gain_loss_pct.toFixed(2)}%</td>
+      </tr>`).join("");
+
+    document.getElementById("summary-foot").innerHTML = `
+      <tr class="total-row">
+        <td colspan="3"><strong>TOTAL</strong></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><strong>$${fmt(totalInvested)}</strong></td>
+        <td><strong>$${fmt(totalValue)}</strong></td>
+        <td class="${totalGL >= 0 ? 'gain' : 'loss'}"><strong>${totalGL >= 0 ? '+' : ''}$${fmt(totalGL)}</strong></td>
+        <td class="${totalPct >= 0 ? 'gain' : 'loss'}"><strong>${totalPct >= 0 ? '+' : ''}${totalPct.toFixed(2)}%</strong></td>
+      </tr>`;
+
+    window._summaryRows = rows;
+  }
+
+  async function saveCSV() {
+    if (!window._summaryRows) return;
+    const res  = await fetch("/api/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(window._summaryRows),
+    });
+    const data = await res.json();
+    alert(data.message);
+  }
+
+  function clearAll() {
+    holdings.length = 0;
+    renderHoldings();
+    document.getElementById("summary-section").style.display = "none";
+    showError("");
+  }
+
+  document.getElementById("sector-select").addEventListener("change", loadTickers);
+  document.getElementById("ticker-select").addEventListener("change", updateTickerInfo);
+
+  loadTickers();
+</script>
+</body>
+</html>
