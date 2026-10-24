@@ -4,160 +4,506 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>S&P 500 Portfolio Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f1117;
-      color: #e2e8f0;
-      min-height: 100vh;
+    :root {
+      --bg: #070b14;
+      --surface: #0d1424;
+      --surface2: #111827;
+      --border: #1e2d45;
+      --accent: #3b82f6;
+      --accent2: #8b5cf6;
+      --green: #10b981;
+      --red: #ef4444;
+      --text: #f1f5f9;
+      --muted: #64748b;
+      --subtle: #1e293b;
     }
 
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 20% 20%, rgba(59,130,246,0.06) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 80%, rgba(139,92,246,0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* HEADER */
     header {
-      background: linear-gradient(135deg, #1a1f2e, #252d3d);
-      padding: 24px 40px;
-      border-bottom: 1px solid #2d3748;
+      position: relative;
+      z-index: 10;
+      background: rgba(13,20,36,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 70px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
     }
-    header h1 { font-size: 1.6rem; font-weight: 700; color: #63b3ed; }
-    header span { font-size: 0.9rem; color: #718096; }
 
-    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .logo h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-badge {
+      background: rgba(16,185,129,0.15);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: var(--green);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 60px 24px 40px;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: var(--accent);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      letter-spacing: 0.05em;
+    }
+
+    .hero h2 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* CONTAINER */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    /* CARDS */
     .card {
-      background: #1a1f2e;
-      border: 1px solid #2d3748;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 24px;
-    }
-    .card h2 { font-size: 1.1rem; color: #90cdf4; margin-bottom: 16px; font-weight: 600; }
-
-    .form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
-    label { font-size: 0.8rem; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.05em; }
-
-    select, input[type="text"], input[type="number"] {
-      background: #252d3d;
-      border: 1px solid #3d4a5c;
-      border-radius: 8px;
-      color: #e2e8f0;
-      padding: 10px 12px;
-      font-size: 0.95rem;
-      outline: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
       transition: border-color 0.2s;
     }
-    select:focus, input:focus { border-color: #63b3ed; }
+    .card:hover { border-color: #2a3f5f; }
 
-    .btn {
-      padding: 10px 20px;
-      border: none;
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .card-icon {
+      width: 32px;
+      height: 32px;
       border-radius: 8px;
-      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+    .icon-blue  { background: rgba(59,130,246,0.15); }
+    .icon-green { background: rgba(16,185,129,0.15); }
+    .icon-purple{ background: rgba(139,92,246,0.15); }
+
+    .card-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* FORM */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 2fr 2fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+    label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    select, input[type="number"] {
+      background: var(--subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      padding: 11px 14px;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    select:focus, input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+
+    /* BUTTONS */
+    .btn {
+      padding: 11px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .btn:hover { opacity: 0.85; }
-    .btn:active { transform: scale(0.97); }
-    .btn-primary { background: #3182ce; color: #fff; }
-    .btn-success { background: #38a169; color: #fff; }
-    .btn-danger  { background: #e53e3e; color: #fff; font-size: 0.8rem; padding: 6px 12px; }
-    .btn-outline { background: transparent; border: 1px solid #3d4a5c; color: #a0aec0; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
 
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #2563eb);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+    }
+    .btn-primary:hover { box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--green), #059669);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+    }
+
+    .btn-ghost {
+      background: var(--subtle);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: #3d4a5c; }
+
+    .btn-remove {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: var(--red);
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      border-radius: 6px;
+    }
+    .btn-remove:hover { background: rgba(239,68,68,0.2); transform: none; }
+
+    /* TICKER INFO */
     #ticker-info {
-      margin-top: 10px;
-      padding: 10px 14px;
-      background: #252d3d;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      color: #90cdf4;
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: rgba(59,130,246,0.06);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      color: #93c5fd;
       display: none;
+      gap: 16px;
+      flex-wrap: wrap;
     }
+    #ticker-info span { color: var(--muted); }
+    #ticker-info strong { color: var(--text); }
 
-    #holdings-list { margin-top: 16px; }
+    /* HOLDINGS */
+    #holdings-list { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+
     .holding-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 14px;
-      background: #252d3d;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      font-size: 0.9rem;
+      padding: 12px 16px;
+      background: var(--subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: border-color 0.2s;
     }
-    .holding-item .ticker-badge {
-      background: #2b4a7a;
-      color: #90cdf4;
-      padding: 2px 8px;
-      border-radius: 4px;
+    .holding-item:hover { border-color: #2a3f5f; }
+
+    .holding-left { display: flex; align-items: center; gap: 12px; }
+
+    .ticker-badge {
+      background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2));
+      border: 1px solid rgba(59,130,246,0.3);
+      color: #93c5fd;
+      padding: 4px 10px;
+      border-radius: 6px;
       font-weight: 700;
-      font-size: 0.85rem;
-      margin-right: 10px;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
     }
 
-    .summary-actions { display: flex; gap: 12px; margin-bottom: 16px; }
+    .holding-name { font-size: 0.88rem; color: var(--text); }
+    .holding-meta { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
 
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .holding-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 0.82rem;
+    }
+
+    .holding-stat { text-align: right; }
+    .holding-stat .s-label { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; }
+    .holding-stat .s-value { color: var(--text); font-weight: 600; }
+
+    /* ACTIONS */
+    .actions-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .stat-card:hover { border-color: #2a3f5f; transform: translateY(-2px); }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-value.gain { color: var(--green); }
+    .stat-value.loss { color: var(--red); }
+
+    /* TABLE */
+    .table-wrap { overflow-x: auto; border-radius: 10px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
     thead th {
-      background: #252d3d;
-      color: #90cdf4;
-      padding: 10px 12px;
+      background: var(--subtle);
+      color: var(--muted);
+      padding: 12px 14px;
       text-align: left;
       font-weight: 600;
-      border-bottom: 2px solid #3d4a5c;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
-    tbody tr { border-bottom: 1px solid #2d3748; transition: background 0.15s; }
-    tbody tr:hover { background: #1e2535; }
-    tbody td { padding: 10px 12px; }
 
-    .gain  { color: #68d391; font-weight: 600; }
-    .loss  { color: #fc8181; font-weight: 600; }
-    .total-row td { background: #1e2535; font-weight: 700; border-top: 2px solid #3d4a5c; }
+    tbody tr {
+      border-bottom: 1px solid rgba(30,45,69,0.5);
+      transition: background 0.15s;
+    }
+    tbody tr:hover { background: rgba(30,41,59,0.5); }
+    tbody td { padding: 13px 14px; }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .stat-card {
-      background: #252d3d;
-      border-radius: 10px;
-      padding: 16px;
+    tfoot td {
+      padding: 14px;
+      background: rgba(59,130,246,0.05);
+      border-top: 1px solid var(--border);
+      font-weight: 700;
+    }
+
+    .gain { color: var(--green); font-weight: 600; }
+    .loss { color: var(--red); font-weight: 600; }
+
+    .sector-tag {
+      background: rgba(139,92,246,0.1);
+      border: 1px solid rgba(139,92,246,0.2);
+      color: #c4b5fd;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+    }
+
+    /* EMPTY */
+    .empty-state {
       text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
-    .stat-card .label { font-size: 0.75rem; color: #718096; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-    .stat-card .value { font-size: 1.4rem; font-weight: 700; }
+    .empty-state .empty-icon { font-size: 2rem; margin-bottom: 8px; }
+
+    /* ERROR */
+    #error-msg {
+      color: #fca5a5;
+      font-size: 0.82rem;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 8px;
+      display: none;
+    }
 
     #summary-section { display: none; }
-    #error-msg { color: #fc8181; font-size: 0.85rem; margin-top: 8px; display: none; }
 
-    .empty-state { text-align: center; color: #4a5568; padding: 32px; font-size: 0.95rem; }
-
-    @media (max-width: 600px) {
-      header { padding: 16px 20px; }
-      .container { padding: 16px; }
-      table { font-size: 0.78rem; }
-      thead th, tbody td { padding: 8px 6px; }
+    /* DIVIDER */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 8px 0 20px;
     }
+
+    /* SAVE TOAST */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--green);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 8px 30px rgba(16,185,129,0.4);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
   </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <h1>📈 S&amp;P 500 Portfolio Tracker</h1>
-    <span>Track your investments against live S&amp;P 500 prices</span>
+  <div class="logo">
+    <div class="logo-icon">📈</div>
+    <h1>Portfolio Tracker</h1>
   </div>
+  <div class="header-badge">● S&amp;P 500 Live</div>
 </header>
+
+<div class="hero">
+  <div class="hero-tag">✦ S&amp;P 500 Investment Dashboard</div>
+  <h2>Track Your Portfolio<br/>Like a Pro</h2>
+  <p>Add your holdings, analyze gains & losses, and export your portfolio summary instantly.</p>
+</div>
 
 <div class="container">
 
-  <!-- Step 1: Add Holdings -->
+  <!-- Add Holdings -->
   <div class="card">
-    <h2>➕ Add Holdings</h2>
-    <div class="form-row">
+    <div class="card-header">
+      <div class="card-icon icon-blue">➕</div>
+      <h2>Add Holdings</h2>
+    </div>
+    <div class="form-grid">
       <div class="form-group">
-        <label>Filter by Sector</label>
+        <label>Sector Filter</label>
         <select id="sector-select">
           <option value="">All Sectors</option>
           {% for s in sectors %}
@@ -169,37 +515,47 @@
         <label>Ticker Symbol</label>
         <select id="ticker-select"><option value="">— select ticker —</option></select>
       </div>
-      <div class="form-group" style="max-width:140px">
+      <div class="form-group">
         <label>Buy Price ($)</label>
         <input type="number" id="buy-price" min="0.01" step="0.01" placeholder="0.00"/>
       </div>
-      <div class="form-group" style="max-width:140px">
+      <div class="form-group">
         <label>Shares</label>
         <input type="number" id="shares" min="0.01" step="0.01" placeholder="0"/>
       </div>
-      <button class="btn btn-primary" onclick="addHolding()">Add</button>
+      <button class="btn btn-primary" onclick="addHolding()">＋ Add</button>
     </div>
+
     <div id="ticker-info"></div>
     <div id="error-msg"></div>
+
+    <div class="divider"></div>
+
     <div id="holdings-list">
-      <div class="empty-state">No holdings added yet.</div>
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        No holdings added yet. Select a ticker above to get started.
+      </div>
     </div>
   </div>
 
-  <!-- Step 2: Summary -->
-  <div style="display:flex; gap:12px; margin-bottom:24px;">
+  <!-- Action Buttons -->
+  <div class="actions-row">
     <button class="btn btn-success" onclick="computeSummary()">📊 Compute Summary</button>
-    <button class="btn btn-outline" onclick="clearAll()">🗑 Clear All</button>
+    <button class="btn btn-ghost" onclick="clearAll()">🗑 Clear All</button>
   </div>
 
+  <!-- Summary -->
   <div id="summary-section">
     <div class="stats-grid" id="stats-grid"></div>
+
     <div class="card">
-      <h2>📋 Portfolio Summary</h2>
-      <div class="summary-actions">
-        <button class="btn btn-success" onclick="saveCSV()">💾 Save to CSV</button>
+      <div class="card-header">
+        <div class="card-icon icon-green">📋</div>
+        <h2>Portfolio Summary</h2>
+        <button class="btn btn-success" style="margin-left:auto" onclick="saveCSV()">💾 Save CSV</button>
       </div>
-      <div style="overflow-x:auto">
+      <div class="table-wrap">
         <table>
           <thead>
             <tr>
@@ -216,6 +572,8 @@
   </div>
 
 </div>
+
+<div id="toast">✓ Summary saved to CSV!</div>
 
 <script>
   const holdings = [];
@@ -238,12 +596,16 @@
 
   function updateTickerInfo() {
     const sym = document.getElementById("ticker-select").value;
-    const info = document.getElementById("ticker-info");
-    if (!sym) { info.style.display = "none"; return; }
+    const el = document.getElementById("ticker-info");
+    if (!sym) { el.style.display = "none"; return; }
     const t = allTickers.find(x => x.symbol === sym);
-    if (!t) { info.style.display = "none"; return; }
-    info.style.display = "block";
-    info.innerHTML = `<strong>${t.name}</strong> &nbsp;|&nbsp; ${t.sector} &nbsp;|&nbsp; ${t.industry} &nbsp;|&nbsp; Current Price: <strong>$${t.price.toLocaleString("en-US", {minimumFractionDigits:2})}</strong>`;
+    if (!t) { el.style.display = "none"; return; }
+    el.style.display = "flex";
+    el.innerHTML = `
+      <span>Company: <strong>${t.name}</strong></span>
+      <span>Sector: <strong>${t.sector}</strong></span>
+      <span>Industry: <strong>${t.industry}</strong></span>
+      <span>Current Price: <strong style="color:#34d399">$${t.price.toLocaleString("en-US",{minimumFractionDigits:2})}</strong></span>`;
   }
 
   function showError(msg) {
@@ -254,17 +616,15 @@
 
   function addHolding() {
     showError("");
-    const ticker    = document.getElementById("ticker-select").value;
-    const buyPrice  = parseFloat(document.getElementById("buy-price").value);
-    const shares    = parseFloat(document.getElementById("shares").value);
-
-    if (!ticker)          return showError("Please select a ticker.");
+    const ticker   = document.getElementById("ticker-select").value;
+    const buyPrice = parseFloat(document.getElementById("buy-price").value);
+    const shares   = parseFloat(document.getElementById("shares").value);
+    if (!ticker) return showError("Please select a ticker.");
     if (isNaN(buyPrice) || buyPrice <= 0) return showError("Enter a valid buy price.");
     if (isNaN(shares)   || shares   <= 0) return showError("Enter a valid number of shares.");
     if (holdings.find(h => h.ticker === ticker)) return showError(`${ticker} is already added.`);
-
     const t = allTickers.find(x => x.symbol === ticker);
-    holdings.push({ ticker, buy_price: buyPrice, shares, name: t?.name || "", current_price: t?.price || 0 });
+    holdings.push({ ticker, buy_price: buyPrice, shares, name: t?.name||"", sector: t?.sector||"", current_price: t?.price||0 });
     renderHoldings();
     document.getElementById("buy-price").value = "";
     document.getElementById("shares").value = "";
@@ -279,20 +639,32 @@
   function renderHoldings() {
     const el = document.getElementById("holdings-list");
     if (!holdings.length) {
-      el.innerHTML = '<div class="empty-state">No holdings added yet.</div>';
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div>No holdings added yet. Select a ticker above to get started.</div>`;
       return;
     }
     el.innerHTML = holdings.map(h => `
       <div class="holding-item">
-        <div>
+        <div class="holding-left">
           <span class="ticker-badge">${h.ticker}</span>
-          <span>${h.name}</span>
+          <div>
+            <div class="holding-name">${h.name}</div>
+            <div class="holding-meta">${h.sector}</div>
+          </div>
         </div>
-        <div style="display:flex;gap:24px;align-items:center;font-size:0.85rem;color:#a0aec0">
-          <span>Buy: <strong style="color:#e2e8f0">$${h.buy_price.toFixed(2)}</strong></span>
-          <span>Shares: <strong style="color:#e2e8f0">${h.shares}</strong></span>
-          <span>Now: <strong style="color:#90cdf4">$${h.current_price.toFixed(2)}</strong></span>
-          <button class="btn btn-danger" onclick="removeHolding('${h.ticker}')">✕</button>
+        <div class="holding-right">
+          <div class="holding-stat">
+            <div class="s-label">Buy Price</div>
+            <div class="s-value">$${h.buy_price.toFixed(2)}</div>
+          </div>
+          <div class="holding-stat">
+            <div class="s-label">Shares</div>
+            <div class="s-value">${h.shares}</div>
+          </div>
+          <div class="holding-stat">
+            <div class="s-label">Current</div>
+            <div class="s-value" style="color:#34d399">$${h.current_price.toFixed(2)}</div>
+          </div>
+          <button class="btn btn-remove" onclick="removeHolding('${h.ticker}')">✕ Remove</button>
         </div>
       </div>`).join("");
   }
@@ -311,46 +683,43 @@
     document.getElementById("summary-section").scrollIntoView({ behavior: "smooth" });
   }
 
-  function fmt(n) { return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fmt(n) { return n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
   function renderSummary(rows) {
-    const totalInvested = rows.reduce((s, r) => s + r.invested, 0);
-    const totalValue    = rows.reduce((s, r) => s + r.market_value, 0);
-    const totalGL       = totalValue - totalInvested;
-    const totalPct      = totalInvested ? (totalGL / totalInvested) * 100 : 0;
+    const ti  = rows.reduce((s,r) => s+r.invested, 0);
+    const tv  = rows.reduce((s,r) => s+r.market_value, 0);
+    const tgl = tv - ti;
+    const tp  = ti ? (tgl/ti)*100 : 0;
 
     document.getElementById("stats-grid").innerHTML = `
-      <div class="stat-card"><div class="label">Total Invested</div><div class="value">$${fmt(totalInvested)}</div></div>
-      <div class="stat-card"><div class="label">Market Value</div><div class="value">$${fmt(totalValue)}</div></div>
-      <div class="stat-card"><div class="label">Total G/L</div><div class="value ${totalGL >= 0 ? 'gain' : 'loss'}">${totalGL >= 0 ? '+' : ''}$${fmt(totalGL)}</div></div>
-      <div class="stat-card"><div class="label">Return</div><div class="value ${totalPct >= 0 ? 'gain' : 'loss'}">${totalPct >= 0 ? '+' : ''}${totalPct.toFixed(2)}%</div></div>
-      <div class="stat-card"><div class="label">Holdings</div><div class="value">${rows.length}</div></div>
-    `;
+      <div class="stat-card"><div class="stat-label">Total Invested</div><div class="stat-value">$${fmt(ti)}</div></div>
+      <div class="stat-card"><div class="stat-label">Market Value</div><div class="stat-value">$${fmt(tv)}</div></div>
+      <div class="stat-card"><div class="stat-label">Total G/L</div><div class="stat-value ${tgl>=0?'gain':'loss'}">${tgl>=0?'+':''}$${fmt(tgl)}</div></div>
+      <div class="stat-card"><div class="stat-label">Return</div><div class="stat-value ${tp>=0?'gain':'loss'}">${tp>=0?'+':''}${tp.toFixed(2)}%</div></div>
+      <div class="stat-card"><div class="stat-label">Holdings</div><div class="stat-value">${rows.length}</div></div>`;
 
     document.getElementById("summary-body").innerHTML = rows.map(r => `
       <tr>
         <td><span class="ticker-badge">${r.ticker}</span></td>
         <td>${r.name}</td>
-        <td style="color:#a0aec0;font-size:0.82rem">${r.sector}</td>
+        <td><span class="sector-tag">${r.sector}</span></td>
         <td>${r.shares}</td>
         <td>$${fmt(r.buy_price)}</td>
         <td>$${fmt(r.current_price)}</td>
         <td>$${fmt(r.invested)}</td>
         <td>$${fmt(r.market_value)}</td>
-        <td class="${r.gain_loss >= 0 ? 'gain' : 'loss'}">${r.gain_loss >= 0 ? '+' : ''}$${fmt(r.gain_loss)}</td>
-        <td class="${r.gain_loss_pct >= 0 ? 'gain' : 'loss'}">${r.gain_loss_pct >= 0 ? '+' : ''}${r.gain_loss_pct.toFixed(2)}%</td>
+        <td class="${r.gain_loss>=0?'gain':'loss'}">${r.gain_loss>=0?'+':''}$${fmt(r.gain_loss)}</td>
+        <td class="${r.gain_loss_pct>=0?'gain':'loss'}">${r.gain_loss_pct>=0?'+':''}${r.gain_loss_pct.toFixed(2)}%</td>
       </tr>`).join("");
 
     document.getElementById("summary-foot").innerHTML = `
-      <tr class="total-row">
+      <tr>
         <td colspan="3"><strong>TOTAL</strong></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td><strong>$${fmt(totalInvested)}</strong></td>
-        <td><strong>$${fmt(totalValue)}</strong></td>
-        <td class="${totalGL >= 0 ? 'gain' : 'loss'}"><strong>${totalGL >= 0 ? '+' : ''}$${fmt(totalGL)}</strong></td>
-        <td class="${totalPct >= 0 ? 'gain' : 'loss'}"><strong>${totalPct >= 0 ? '+' : ''}${totalPct.toFixed(2)}%</strong></td>
+        <td></td><td></td><td></td>
+        <td><strong>$${fmt(ti)}</strong></td>
+        <td><strong>$${fmt(tv)}</strong></td>
+        <td class="${tgl>=0?'gain':'loss'}"><strong>${tgl>=0?'+':''}$${fmt(tgl)}</strong></td>
+        <td class="${tp>=0?'gain':'loss'}"><strong>${tp>=0?'+':''}${tp.toFixed(2)}%</strong></td>
       </tr>`;
 
     window._summaryRows = rows;
@@ -358,13 +727,14 @@
 
   async function saveCSV() {
     if (!window._summaryRows) return;
-    const res  = await fetch("/api/save", {
+    await fetch("/api/save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(window._summaryRows),
     });
-    const data = await res.json();
-    alert(data.message);
+    const toast = document.getElementById("toast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 3000);
   }
 
   function clearAll() {
@@ -376,7 +746,6 @@
 
   document.getElementById("sector-select").addEventListener("change", loadTickers);
   document.getElementById("ticker-select").addEventListener("change", updateTickerInfo);
-
   loadTickers();
 </script>
 </body>
